@@ -6,7 +6,7 @@
     <title>SMS Messaging | Ruchie Landau Photography</title>
     <meta
       name="description"
-      content="Sign up to receive text messages from Ruchie Landau Photography about your photography bookings, including booking confirmations, session reminders, and scheduling changes."
+      content="Sign up for or stop text messages from Ruchie Landau Photography about your photography bookings — booking confirmations, session reminders, and scheduling changes."
     />
     <link rel="canonical" href="https://sms.ruchielandau.com/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -21,16 +21,16 @@
         <nav class="site-nav" aria-label="Primary">
           <ul>
             <li><a href="/" aria-current="page">SMS Messaging</a></li>
-            <li><a href="/privacy-policy">Privacy Policy</a></li>
-            <li><a href="/terms-and-conditions">Terms &amp; Conditions</a></li>
+            <li><a href="/privacy-policy">Privacy</a></li>
+            <li><a href="/terms-and-conditions">Terms</a></li>
             <li>
               <a
                 href="https://www.ruchielandau.com"
                 rel="noopener noreferrer"
                 target="_blank"
-                >Visit RuchieLandau.com<span class="external-mark" aria-hidden="true"
-                  >&#8599;</span
-                ><span class="visually-hidden"> (opens in a new tab)</span></a
+                >Main Website<span class="visually-hidden">
+                  (opens in a new tab)</span
+                ></a
               >
             </li>
           </ul>
@@ -39,100 +39,123 @@
     </header>
 
     <main id="main">
-      <!-- ================= Hero ================= -->
-      <section class="hero shell">
-        <p class="eyebrow">Ruchie Landau Photography</p>
-        <h1>SMS Messaging</h1>
-        <p class="lede">
-          Sign up to receive text messages from Ruchie Landau Photography about
-          your photography bookings, including booking confirmations, session
-          reminders, scheduling changes, and booking-related customer support.
-        </p>
-        <hr class="rule" />
-        <p class="operator-note">
-          Ruchie Landau Photography is operated by Wolf Landau, sole proprietor.
-        </p>
-      </section>
+      <div class="shell shell--main">
+        <!-- ================= Intro ================= -->
+        <div class="intro">
+          <p class="eyebrow">Ruchie Landau Photography</p>
+          <h1>SMS Messaging</h1>
+          <p class="intro__lede">
+            Booking confirmations, session reminders, scheduling changes and
+            booking-related support.
+          </p>
+        </div>
 
-      <!-- ================= Opt-in ================= -->
-      <section id="sms-signup" class="section section--tinted" aria-labelledby="opt-in-heading">
-        <div class="shell">
-          <div class="card">
-            <!-- View 1: the sign-up form. Swapped for the success view below. -->
-            <div class="card__view" id="optin-form-view">
-            <h2 id="opt-in-heading">Receive SMS Updates</h2>
-            <p class="card__intro">
-              Receive booking confirmations, session reminders, scheduling
-              updates, and booking-related support by text.
-            </p>
+        <!-- ================= Main SMS card ================= -->
+        <div class="sms-card" id="sms-tabs">
+          <!--
+            Progressive enhancement: this tab strip is hidden until the script
+            runs. Without JavaScript both panels below stay visible and usable,
+            so no control is ever dead and no content is unreachable.
+          -->
+          <div class="tabs" data-tablist hidden>
+            <button
+              type="button"
+              class="tab"
+              id="tab-receive"
+              data-tab-for="panel-receive"
+            >
+              Receive Texts
+            </button>
+            <button
+              type="button"
+              class="tab"
+              id="tab-stop"
+              data-tab-for="panel-stop"
+            >
+              Stop Texts
+            </button>
+          </div>
 
-            <!--
-              SIMULATION MODE: this form does not submit anywhere. The handler
-              in /assets/js/sms-forms.js validates locally, calls
-              preventDefault(), and shows the success view without sending or
-              storing anything. See the comment block at the top of that file.
-            -->
-            <form id="sms-opt-in-form" novalidate autocomplete="off">
-              <div class="field">
-                <label for="optin-phone">Mobile Phone Number</label>
-                <p class="field__hint" id="optin-phone-hint">
-                  US and Canadian mobile numbers. For example: (845) 555&#8209;0123
-                </p>
-                <input
-                  type="tel"
-                  id="optin-phone"
-                  name="phone"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  placeholder="(000) 000-0000"
-                  aria-describedby="optin-phone-hint optin-phone-error"
-                />
-                <p class="field-error" id="optin-phone-error" role="alert"></p>
-              </div>
+          <!-- ---------- Receive Texts ---------- -->
+          <section class="panel" id="panel-receive" aria-labelledby="opt-in-heading">
+            <div class="panel__view" id="optin-form-view">
+              <h2 id="opt-in-heading">Receive SMS Updates</h2>
 
               <!--
-                COMPLIANCE: single-purpose SMS consent checkbox.
-                * Rendered with NO `checked` attribute and reset to unchecked on
-                  every page load by sms-forms.js.
-                * Not bundled with accepting the Terms or the Privacy Policy.
-                * Required before the form will proceed.
+                SIMULATION MODE: this form does not submit anywhere. The handler
+                in /assets/js/sms-forms.js validates locally, calls
+                preventDefault(), and shows the success view without sending or
+                storing anything. See the comment block at the top of that file.
               -->
-              <div class="consent" id="optin-consent-block">
-                <div class="consent__control">
+              <form id="sms-opt-in-form" novalidate autocomplete="off">
+                <div class="field">
+                  <label for="optin-phone">Mobile Phone Number</label>
                   <input
-                    type="checkbox"
-                    id="optin-consent"
-                    name="sms-consent"
-                    value="yes"
-                    aria-describedby="optin-consent-error"
+                    type="tel"
+                    id="optin-phone"
+                    name="phone"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    placeholder="(000) 000-0000"
+                    aria-describedby="optin-phone-hint optin-phone-error"
                   />
-                  <label class="consent__text" for="optin-consent">
-                    I agree to receive recurring SMS messages from Ruchie Landau
-                    Photography regarding booking confirmations, photography
-                    session reminders, scheduling changes, and booking-related
-                    customer support. Message frequency varies. Message and data
-                    rates may apply. Reply STOP to unsubscribe or HELP for help.
-                    Consent is not a condition of purchase or booking. See our
-                    <a href="/privacy-policy">Privacy Policy</a> and
-                    <a href="/terms-and-conditions">Terms &amp; Conditions</a>.
-                  </label>
+                  <p class="field__hint" id="optin-phone-hint">
+                    US and Canadian mobile numbers.
+                  </p>
+                  <p class="field-error" id="optin-phone-error" role="alert"></p>
                 </div>
-                <p class="field-error" id="optin-consent-error" role="alert"></p>
-              </div>
 
-              <button type="submit" class="button">Sign Up for SMS</button>
-            </form>
+                <!--
+                  COMPLIANCE: single-purpose SMS consent checkbox.
+                  * No `checked` attribute, and reset to unchecked on every page
+                    load by sms-forms.js.
+                  * Not bundled with accepting the Terms or the Privacy Policy.
+                  * Required before the form will proceed.
+                  * The disclosure is shown in full at body size — never
+                    collapsed, truncated, or shrunk.
+                -->
+                <div class="consent" id="optin-consent-block">
+                  <div class="consent__control">
+                    <input
+                      type="checkbox"
+                      id="optin-consent"
+                      name="sms-consent"
+                      value="yes"
+                      aria-describedby="optin-consent-error"
+                    />
+                    <label class="consent__text" for="optin-consent">
+                      I agree to receive recurring SMS messages from Ruchie
+                      Landau Photography regarding booking confirmations,
+                      photography session reminders, scheduling changes, and
+                      booking-related customer support. Message frequency
+                      varies. Message and data rates may apply. Reply STOP to
+                      unsubscribe or HELP for help. Consent is not a condition
+                      of purchase or booking. See our
+                      <a href="/privacy-policy">Privacy Policy</a> and
+                      <a href="/terms-and-conditions">Terms &amp; Conditions</a>.
+                    </label>
+                  </div>
+                  <p class="field-error" id="optin-consent-error" role="alert"></p>
+                </div>
 
-            <p class="card__footnote">
-              This form is the only way to sign up for text messages from Ruchie
-              Landau Photography. We do not add anyone to the SMS program without
-              a request submitted here.
-            </p>
+                <button type="submit" class="button">Sign Up for SMS</button>
+              </form>
+
+              <p class="panel__note">
+                <a href="/privacy-policy">Privacy Policy</a>
+                <span aria-hidden="true">·</span>
+                <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+              </p>
+
+              <p class="panel__note panel__note--quiet">
+                This form is the only way to sign up for texts from Ruchie
+                Landau Photography.
+              </p>
             </div>
 
-            <!-- View 2: shown after a successful sign-up. -->
+            <!-- Shown after a successful sign-up. -->
             <div
-              class="card__view result"
+              class="panel__view result"
               id="optin-success-view"
               role="status"
               tabindex="-1"
@@ -160,69 +183,58 @@
               </p>
 
               <p>Message frequency varies. Message and data rates may apply.</p>
-
               <p>
-                Reply <strong>STOP</strong> at any time to unsubscribe or
+                Reply <strong>STOP</strong> to unsubscribe or
                 <strong>HELP</strong> for assistance.
               </p>
-
-              <p class="result__aside">You can close this page.</p>
 
               <button type="button" class="link-button" id="optin-reset">
                 Sign up another number
               </button>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <!-- ================= Opt-out ================= -->
-      <section id="sms-stop" class="section" aria-labelledby="opt-out-heading">
-        <div class="shell">
-          <div class="card">
-            <!-- View 1: the unsubscribe form. Swapped for the success view below. -->
-            <div class="card__view" id="optout-form-view">
-            <h2 id="opt-out-heading">Stop SMS Messages</h2>
-            <p class="card__intro">
-              You can unsubscribe at any time by replying
-              <strong>STOP</strong> to a Ruchie Landau Photography text message.
-            </p>
+          <!-- ---------- Stop Texts ---------- -->
+          <section class="panel" id="panel-stop" aria-labelledby="opt-out-heading">
+            <div class="panel__view" id="optout-form-view">
+              <h2 id="opt-out-heading">Stop SMS Messages</h2>
+              <p class="panel__lead">
+                Reply <strong>STOP</strong> to any Ruchie Landau Photography
+                text message to unsubscribe.
+              </p>
 
-            <!-- SIMULATION MODE: nothing is transmitted or stored. -->
-            <form id="sms-opt-out-form" novalidate autocomplete="off">
-              <div class="field">
-                <label for="optout-phone">Mobile Phone Number</label>
-                <p class="field__hint" id="optout-phone-hint">
-                  Enter the mobile number you would like unsubscribed.
-                </p>
-                <input
-                  type="tel"
-                  id="optout-phone"
-                  name="phone"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  placeholder="(000) 000-0000"
-                  aria-describedby="optout-phone-hint optout-phone-error"
-                />
-                <p class="field-error" id="optout-phone-error" role="alert"></p>
-              </div>
+              <!-- SIMULATION MODE: nothing is transmitted or stored. -->
+              <form id="sms-opt-out-form" novalidate autocomplete="off">
+                <div class="field">
+                  <label for="optout-phone">Mobile Phone Number</label>
+                  <input
+                    type="tel"
+                    id="optout-phone"
+                    name="phone"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    placeholder="(000) 000-0000"
+                    aria-describedby="optout-phone-hint optout-phone-error"
+                  />
+                  <p class="field__hint" id="optout-phone-hint">
+                    The number you would like unsubscribed.
+                  </p>
+                  <p class="field-error" id="optout-phone-error" role="alert"></p>
+                </div>
 
-              <button type="submit" class="button button--quiet">
-                Unsubscribe from SMS
-              </button>
-            </form>
+                <button type="submit" class="button button--quiet">
+                  Unsubscribe from SMS
+                </button>
+              </form>
 
-            <p class="card__footnote">
-              If you are already receiving text messages, reply
-              <strong>STOP</strong> to any message to unsubscribe. Replying STOP
-              is the fastest way to stop messages and always works, whether or
-              not you use this form.
-            </p>
+              <p class="panel__note panel__note--quiet">
+                Replying STOP is the fastest way to unsubscribe.
+              </p>
             </div>
 
-            <!-- View 2: shown after a successful unsubscribe. -->
+            <!-- Shown after a successful unsubscribe. -->
             <div
-              class="card__view result"
+              class="panel__view result"
               id="optout-success-view"
               role="status"
               tabindex="-1"
@@ -245,12 +257,8 @@
 
               <p class="result__lead">
                 You will no longer receive SMS messages from Ruchie Landau
-                Photography at <strong data-masked-phone>(***) ***-0000</strong>.
-              </p>
-
-              <p>
-                If you change your mind in the future, you may sign up again
-                through this website.
+                Photography at
+                <strong data-masked-phone>(***) ***-0000</strong>.
               </p>
 
               <p>
@@ -262,130 +270,133 @@
                 Unsubscribe another number
               </button>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <!-- ================= Help ================= -->
-      <section
-        id="sms-help"
-        class="section section--tinted section--centered"
-        aria-labelledby="help-heading"
-      >
-        <div class="shell">
-          <div class="section__head">
-            <h2 id="help-heading">Need help?</h2>
-            <p>
-              Reply <strong>HELP</strong> to a Ruchie Landau Photography text
-              message for assistance, or <strong>STOP</strong> to unsubscribe at
-              any time. You can also reach us directly.
+          <noscript>
+            <p class="panel__note panel__note--quiet">
+              These forms need JavaScript. You can still reply
+              <strong>STOP</strong> or <strong>HELP</strong> to any Ruchie
+              Landau Photography text message, or contact us at
+              <a href="tel:+18452130776">845&#8209;213&#8209;0776</a> or
+              <a href="mailto:rhoffmanstudios@gmail.com"
+                >rhoffmanstudios@gmail.com</a
+              >.
             </p>
-          </div>
+          </noscript>
+        </div>
 
-          <ul class="contact-grid">
-            <li>
-              <span class="contact-grid__label">Text</span>
-              <span class="contact-grid__value"
-                >Reply <strong>HELP</strong> or <strong>STOP</strong> to any
-                message</span
-              >
-            </li>
-            <li>
-              <span class="contact-grid__label">Email</span>
-              <a class="contact-grid__value" href="mailto:rhoffmanstudios@gmail.com"
+        <!-- ================= Compact info trio ================= -->
+        <ul class="info-trio">
+          <li class="info-card">
+            <h2>Help</h2>
+            <p>Reply <strong>HELP</strong> to any message.</p>
+            <p>
+              <a href="tel:+18452130776">845&#8209;213&#8209;0776</a><br />
+              <a href="mailto:rhoffmanstudios@gmail.com"
                 >rhoffmanstudios@gmail.com</a
               >
-            </li>
-            <li>
-              <span class="contact-grid__label">Phone</span>
-              <a class="contact-grid__value" href="tel:+18452130776"
-                >845&#8209;213&#8209;0776</a
-              >
-            </li>
-          </ul>
-
-          <p class="section__note">
-            Emailing or calling is for support only &mdash; it does not sign you
-            up for text messages. Sign-ups happen only through the form on this
-            page. For questions about photography sessions and bookings, visit
-            <a
-              href="https://www.ruchielandau.com"
-              rel="noopener noreferrer"
-              target="_blank"
-              >www.ruchielandau.com</a
-            >.
-          </p>
-        </div>
-      </section>
-
-      <!-- ================= Program information ================= -->
-      <section id="sms-faq" class="section section--centered" aria-labelledby="program-heading">
-        <div class="shell">
-          <div class="section__head">
-            <h2 id="program-heading">SMS Program Information</h2>
-            <p>
-              Everything you need to know about text messages from Ruchie Landau
-              Photography.
             </p>
-          </div>
+          </li>
+          <li class="info-card">
+            <h2>Privacy</h2>
+            <p>How SMS information is handled.</p>
+            <p><a class="info-card__link" href="/privacy-policy">Privacy Policy</a></p>
+          </li>
+          <li class="info-card">
+            <h2>Terms</h2>
+            <p>SMS program rules and opt-out information.</p>
+            <p>
+              <a class="info-card__link" href="/terms-and-conditions"
+                >Terms &amp; Conditions</a
+              >
+            </p>
+          </li>
+        </ul>
 
-          <div class="faq">
-            <div class="faq__item">
-              <h3>What messages will I receive?</h3>
+        <!-- ================= SMS information accordion ================= -->
+        <section class="faq" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">SMS Information</h2>
+
+          <!--
+            Native <details> with a shared name gives an exclusive accordion
+            with no JavaScript. Browsers without support simply allow more than
+            one open at a time — the content is never hidden from a reader.
+          -->
+          <details name="sms-faq">
+            <summary>What messages will I receive?</summary>
+            <div class="faq__body">
               <p>
                 Booking confirmations, photography session reminders, scheduling
                 changes, and customer-support messages related to your
-                photography booking.
+                photography booking. The program is not used for promotional or
+                marketing messages.
               </p>
             </div>
+          </details>
 
-            <div class="faq__item">
-              <h3>How often will I receive messages?</h3>
+          <details name="sms-faq">
+            <summary>How often will I receive messages?</summary>
+            <div class="faq__body">
               <p>
                 Message frequency varies based on your bookings and
                 communications with Ruchie Landau Photography.
               </p>
             </div>
+          </details>
 
-            <div class="faq__item">
-              <h3>Does it cost anything?</h3>
+          <details name="sms-faq">
+            <summary>Does SMS cost anything?</summary>
+            <div class="faq__body">
               <p>
-                Message and data rates may apply depending on your mobile carrier
-                and plan.
+                Message and data rates may apply depending on your mobile
+                carrier and plan.
               </p>
             </div>
+          </details>
 
-            <div class="faq__item">
-              <h3>How do I stop messages?</h3>
+          <details name="sms-faq">
+            <summary>How do I stop messages?</summary>
+            <div class="faq__body">
               <p>
                 Reply <strong>STOP</strong> to any Ruchie Landau Photography SMS
                 message to unsubscribe.
               </p>
             </div>
+          </details>
 
-            <div class="faq__item">
-              <h3>How do I get help?</h3>
+          <details name="sms-faq">
+            <summary>How do I get help?</summary>
+            <div class="faq__body">
               <p>
-                Reply <strong>HELP</strong> to a Ruchie Landau Photography SMS
-                message for assistance.
+                Reply <strong>HELP</strong> to any Ruchie Landau Photography SMS
+                message for assistance, or contact us at
+                <a href="tel:+18452130776">845&#8209;213&#8209;0776</a> or
+                <a href="mailto:rhoffmanstudios@gmail.com"
+                  >rhoffmanstudios@gmail.com</a
+                >. Contacting us does not sign you up for text messages.
               </p>
             </div>
+          </details>
 
-            <div class="faq__item">
-              <h3>Is SMS required to book?</h3>
+          <details name="sms-faq">
+            <summary>Is SMS required to book?</summary>
+            <div class="faq__body">
               <p>
                 No. Consent to receive SMS messages is not a condition of
                 purchasing or booking photography services.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
+          </details>
+        </section>
+      </div>
     </main>
 
     <footer class="site-footer">
       <div class="shell site-footer__inner">
-        <a class="wordmark" href="/">Ruchie Landau Photography</a>
+        <div class="site-footer__brand">
+          <p class="site-footer__name">Ruchie Landau Photography</p>
+          <p>Operated by Wolf Landau, sole proprietor.</p>
+        </div>
 
         <nav class="footer-nav" aria-label="Footer">
           <ul>
@@ -397,7 +408,7 @@
                 href="https://www.ruchielandau.com"
                 rel="noopener noreferrer"
                 target="_blank"
-                >Visit RuchieLandau.com<span class="visually-hidden">
+                >RuchieLandau.com<span class="visually-hidden">
                   (opens in a new tab)</span
                 ></a
               >
@@ -405,16 +416,11 @@
           </ul>
         </nav>
 
-        <div class="site-footer__legal">
-          <p>
-            Ruchie Landau Photography is operated by Wolf Landau, sole
-            proprietor.
-          </p>
-          <p>
-            Message frequency varies. Message and data rates may apply. Reply
-            STOP to unsubscribe or HELP for help.
-          </p>
-        </div>
+        <p class="site-footer__contact">
+          <a href="tel:+18452130776">845&#8209;213&#8209;0776</a>
+          <span aria-hidden="true">·</span>
+          <a href="mailto:rhoffmanstudios@gmail.com">rhoffmanstudios@gmail.com</a>
+        </p>
       </div>
     </footer>
 

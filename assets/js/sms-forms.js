@@ -380,12 +380,97 @@
   }
 
   /* ------------------------------------------------------------------------
-     6. Boot
+     6. Receive / Stop tabs
+     ------------------------------------------------------------------------
+     Progressive enhancement. The markup ships with both panels visible and the
+     tab strip hidden, so with no JavaScript nothing is unreachable and no
+     control is dead. This turns that into a proper ARIA tablist.
      ---------------------------------------------------------------------- */
 
+  function initTabs() {
+    var root = document.getElementById("sms-tabs");
+    if (!root) return;
+
+    var tablist = root.querySelector("[data-tablist]");
+    var tabs = [].slice.call(root.querySelectorAll("[data-tab-for]"));
+    if (!tablist || tabs.length < 2) return;
+
+    var panels = [];
+    for (var i = 0; i < tabs.length; i++) {
+      var panel = document.getElementById(tabs[i].getAttribute("data-tab-for"));
+      if (!panel) return;
+      panels.push(panel);
+    }
+
+    tablist.hidden = false;
+    tablist.setAttribute("role", "tablist");
+    tablist.setAttribute("aria-label", "Receive or stop text messages");
+
+    function select(index, moveFocus) {
+      for (var i = 0; i < tabs.length; i++) {
+        var isActive = i === index;
+        tabs[i].setAttribute("aria-selected", isActive ? "true" : "false");
+        tabs[i].tabIndex = isActive ? 0 : -1;
+        panels[i].hidden = !isActive;
+      }
+      if (moveFocus) tabs[index].focus();
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-controls", panels[index].id);
+      panels[index].setAttribute("role", "tabpanel");
+      panels[index].setAttribute("aria-labelledby", tab.id);
+
+      tab.addEventListener("click", function () {
+        select(index, false);
+      });
+
+      // Standard tablist keys: arrows move and activate, Home/End jump.
+      tab.addEventListener("keydown", function (event) {
+        var next = null;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+          next = (index + 1) % tabs.length;
+        } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+          next = (index - 1 + tabs.length) % tabs.length;
+        } else if (event.key === "Home") {
+          next = 0;
+        } else if (event.key === "End") {
+          next = tabs.length - 1;
+        }
+        if (next !== null) {
+          event.preventDefault();
+          select(next, true);
+        }
+      });
+    });
+
+    // "Receive Texts" is the default view.
+    select(0, false);
+  }
+
+  /* ------------------------------------------------------------------------
+     7. Boot
+     ------------------------------------------------------------------------
+     Each feature is booted independently: if one ever throws, the others still
+     work rather than the whole page going inert.
+     ---------------------------------------------------------------------- */
+
+  function boot(name, fn) {
+    try {
+      fn();
+    } catch (err) {
+      // Never log user input — only which feature failed and why.
+      if (window.console && console.error) {
+        console.error("sms-forms: " + name + " failed to initialise", err);
+      }
+    }
+  }
+
   function init() {
-    initOptInForm();
-    initOptOutForm();
+    boot("tabs", initTabs);
+    boot("opt-in form", initOptInForm);
+    boot("opt-out form", initOptOutForm);
   }
 
   if (document.readyState === "loading") {

@@ -71,12 +71,40 @@ the source comments only.
 | `/privacy-policy`       | `privacy-policy/index.html`       | Privacy Policy \| Ruchie Landau Photography    |
 | `/terms-and-conditions` | `terms-and-conditions/index.html` | Terms & Conditions \| Ruchie Landau Photography |
 
-The homepage contains, in order: an introduction, the **Receive SMS Updates**
-opt-in form, the **Stop SMS Messages** opt-out section, a **Need help?**
-section, and the **SMS Program Information** FAQ.
-
 Every page links to all three routes plus `https://www.ruchielandau.com` from
 both the header navigation and the footer.
+
+### Homepage layout
+
+Deliberately compact — the whole point of the site lands in the first screen:
+
+1. **Compact header** — wordmark + `SMS Messaging · Privacy · Terms · Main Website`
+   on one row (two tight lines on phones).
+2. **Short intro** — brand eyebrow, `SMS Messaging`, one line of purpose.
+3. **One SMS card** with a two-tab strip: **Receive Texts** (default) and
+   **Stop Texts**. Only the selected form is shown. Each panel swaps to its
+   success view in place after a submission.
+4. **Info trio** — three small cards: Help (reply HELP, phone, email), Privacy,
+   Terms.
+5. **SMS Information** — six-item accordion, all collapsed by default.
+6. **Compact footer** — brand, operator line, four links, phone, email.
+
+### Two implementation notes worth knowing before editing
+
+**The tabs are progressive enhancement.** The markup ships with the tab strip
+`hidden` and *both* panels visible. `initTabs()` in `sms-forms.js` reveals the
+strip, applies the ARIA tablist roles, and hides the inactive panel. So if the
+script ever fails to load or throw-fails, the page degrades to both forms
+stacked and fully usable — no dead buttons, nothing unreachable. Each feature
+(`tabs`, `opt-in form`, `opt-out form`) is booted inside its own try/catch for
+the same reason. Do not move `hidden` onto a panel in the HTML.
+
+**The accordion is native `<details name="sms-faq">`.** The shared `name` gives
+an exclusive accordion — one open at a time — with no JavaScript at all. On
+browsers without support, more than one can be open; nothing is ever hidden
+from a reader. Note that `d.open = true` in a loop will *close* the previous
+item; remove the `name` attribute first if you need them all open (e.g. when
+scraping the page in a test).
 
 ---
 
@@ -160,6 +188,7 @@ to change**. Its functions:
 | `showOptOutSuccess(masked)` | Same, for unsubscribe |
 | `resetOptInForm()` | Restores the form ("Sign up another number") |
 | `resetOptOutForm()` | Same, for unsubscribe |
+| `initTabs()` | Upgrades the Receive/Stop markup into an ARIA tablist |
 
 Both simulation functions receive the validated E.164 number
 (e.g. `+18455550123`) and return a promise. To go live:
@@ -194,7 +223,9 @@ visual reasons:
   unchecked on every page load in `sms-forms.js`. It must never be pre-checked.
 - The consent checkbox is **separate from** accepting the Terms or the Privacy
   Policy, and is **not a condition of purchase or booking**.
-- The consent disclosure must stay at readable body size — never shrink it.
+- The consent disclosure must stay at readable body size, in full, directly
+  beside the checkbox — never shrink it, truncate it, or move it behind an
+  accordion, tooltip, modal, or "read more".
 - These phrases must remain visible: *message frequency varies*, *message and
   data rates may apply*, *Reply STOP to unsubscribe*, *Reply HELP for help*.
 - **Privacy Policy** and **Terms & Conditions** are linked directly from inside
