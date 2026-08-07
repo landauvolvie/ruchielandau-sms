@@ -1,0 +1,8 @@
+# Ruchie Landau Photography — SMS Messaging
+# Every page here is public and intended to be readable by anyone,
+# including messaging-compliance reviewers.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://sms.ruchielandau.com/sitemap.xml

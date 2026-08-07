@@ -1,0 +1,12 @@
+# This is a static site with no build step and no dependencies.
+# Nothing here should ever be committed.
+
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+.wrangler/
+.vscode/
+.idea/
