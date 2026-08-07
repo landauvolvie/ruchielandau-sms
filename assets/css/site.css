@@ -27,7 +27,6 @@
 
   --error: #93341f;
   --error-tint: #fdf3f0;
-  --notice-tint: #f3f1ec;
 
   --focus: #3f3a34;
 
@@ -572,35 +571,192 @@ input[type="tel"][aria-invalid="true"] {
   }
 }
 
-/* Result / status message shown after local validation passes. */
-.form-status {
-  margin-top: 1.5rem;
+/* Loading state. aria-disabled rather than [disabled], so focus is retained;
+   the submit handler guards against a second submission. */
+.button.is-busy {
+  cursor: progress;
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
 }
 
-.form-status:empty {
-  margin-top: 0;
+.button.is-busy::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
-.notice {
-  padding: 1.15rem 1.25rem;
-  background: var(--notice-tint);
-  border: 1px solid var(--line-strong);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
-  font-size: 1rem;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button.is-busy::before {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.5;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7b. Success state
+   --------------------------------------------------------------------------
+   A card holds two sibling views — the form and the result — and swaps them
+   by toggling [hidden]. Focus moves to the result so it is announced.
+   -------------------------------------------------------------------------- */
+
+.card__view:focus {
+  outline: none;
+}
+
+.card__view:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+.result__mark {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--paper);
+  background: var(--accent-deep);
+  border-radius: 50%;
+}
+
+.result__mark svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.result__title {
+  margin-bottom: 0.5em;
+}
+
+.result__lead {
+  font-size: clamp(1.0625rem, 2.4vw, 1.125rem);
   color: var(--ink);
+  margin-bottom: 1.5rem;
 }
 
-.notice p {
-  max-width: none;
+.result__lead [data-masked-phone] {
+  white-space: nowrap;
 }
 
-.notice p + p {
-  margin-top: 0.5rem;
+.result p:not(.result__lead):not(.result__aside) {
+  color: var(--ink-muted);
+  margin-bottom: 0.75em;
 }
 
-.notice__title {
-  font-weight: 600;
+.result__aside {
+  margin-top: 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--ink-faint);
+}
+
+/* Understated text button for "sign up another number". */
+.link-button {
+  display: inline-block;
+  margin-top: 1.75rem;
+  padding: 0.5rem 0;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  color: var(--accent-deep);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.link-button:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   7c. Contact methods (Need help?)
+   -------------------------------------------------------------------------- */
+
+.contact-grid {
+  display: grid;
+  gap: 1.25rem;
+  /* Wide enough that the email address never has to break mid-word. */
+  max-width: 58rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-grid li {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.25rem 1rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.contact-grid__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.contact-grid__value {
+  font-size: 0.9375rem;
+  color: var(--ink);
+  /* Last-resort safety so a long address can never push the layout sideways. */
+  overflow-wrap: break-word;
+}
+
+a.contact-grid__value {
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line-strong);
+  justify-self: center;
+  /* Centred grid items size to their content and would otherwise spill out of
+     the cell. min-width:0 removes the automatic min-content floor so the cap
+     applies and overflow-wrap can break as a last resort. */
+  max-width: 100%;
+  min-width: 0;
+}
+
+a.contact-grid__value:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* Three across only once each column is comfortably wider than the email
+   address; below this the cards stack full width. */
+@media (min-width: 56rem) {
+  .contact-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .contact-grid li {
+    align-content: start;
+  }
+}
+
+.section__note {
+  max-width: 38rem;
+  margin: clamp(1.75rem, 4vw, 2.25rem) auto 0;
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  text-align: center;
+  text-wrap: pretty;
 }
 
 /* --------------------------------------------------------------------------

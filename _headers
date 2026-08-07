@@ -1,7 +1,11 @@
 # Cloudflare Pages response headers.
 #
-# The Content-Security-Policy below is deliberately strict for this
-# frontend-only phase:
+# The site currently runs in SMS FORM SIMULATION MODE: the opt-in and opt-out
+# forms reproduce the finished customer experience in the browser, but no data
+# is transmitted or stored. See the comment block at the top of
+# /assets/js/sms-forms.js and the "Current status" section of README.md.
+#
+# The Content-Security-Policy below enforces that at the browser level:
 #   connect-src 'none'  -> the page cannot make any network request (no fetch/XHR),
 #                          so a phone number physically cannot leave the browser.
 #   form-action 'none'  -> no form can POST anywhere.

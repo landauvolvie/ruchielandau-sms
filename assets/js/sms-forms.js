@@ -1,64 +1,42 @@
 /* ==========================================================================
-   Ruchie Landau Photography — SMS form behaviour
-   --------------------------------------------------------------------------
-   FRONTEND ONLY.
-
-   Nothing in this file transmits, stores, or logs a phone number. There is no
-   fetch/XHR call, no localStorage/sessionStorage/cookie write, and no
-   console output containing user input. The two handlers at the top of this
-   file are deliberate stubs — they are the ONLY place a real backend call
-   needs to be added later.
-   ========================================================================== */
+ * SMS FORM SIMULATION MODE
+ *
+ * These handlers currently simulate successful enrollment/unsubscribe
+ * entirely in the browser for UI testing.
+ *
+ * NO DATA IS TRANSMITTED OR STORED.
+ *
+ * BEFORE REAL PRODUCTION ENROLLMENT:
+ * Replace simulateSmsOptIn() and simulateSmsOptOut()
+ * with authenticated/safe same-origin API calls and update CSP.
+ * ==========================================================================
+ *
+ * What "simulation" means here, precisely:
+ *
+ *   - The customer-facing UI behaves exactly like the finished product:
+ *     validate -> brief loading state -> success state.
+ *   - Nothing leaves the browser. There is no fetch(), no XMLHttpRequest,
+ *     no sendBeacon, no WebSocket, no form POST (the page's CSP also sets
+ *     connect-src 'none' and form-action 'none' as a hard backstop).
+ *   - Nothing is persisted. No localStorage, no sessionStorage, no cookies.
+ *   - Nothing is logged. The phone number never reaches console.*.
+ *   - The entered number lives only in a local variable for the duration of
+ *     one page view, is reduced to a masked form for display, and the raw
+ *     input value is cleared from the DOM as soon as it is validated.
+ *
+ * THE SUCCESS SCREENS ARE NOT PROOF OF CONSENT. No consent record exists
+ * until the backend described above is built. See README.md.
+ * ========================================================================== */
 
 (function () {
   "use strict";
 
-  /* ------------------------------------------------------------------------
-     1. BACKEND SEAM
-     ------------------------------------------------------------------------
-     Replace the bodies of these two functions when the API exists. Each takes
-     the validated E.164 phone number and resolves with a message to display.
-
-     Example of the eventual implementation:
-
-       async function submitOptIn(phone) {
-         const res = await fetch("/api/sms/opt-in", {
-           method: "POST",
-           headers: { "Content-Type": "application/json" },
-           body: JSON.stringify({ phone: phone, consent: true })
-         });
-         if (!res.ok) throw new Error("Request failed");
-         return {
-           title: "You're signed up.",
-           body: "Check your phone for a confirmation text message."
-         };
-       }
-
-     Until then they must NOT imply that anything was recorded.
-     ---------------------------------------------------------------------- */
-
-  function submitOptIn(/* phone */) {
-    return Promise.resolve({
-      title: "SMS enrollment is not yet active. No consent has been recorded.",
-      body:
-        "This sign-up form is not connected yet. Your phone number was not sent " +
-        "anywhere and was not saved. Please check back soon."
-    });
-  }
-
-  function submitOptOut(/* phone */) {
-    return Promise.resolve({
-      title:
-        "Online SMS unsubscribe is not yet active. No changes have been made.",
-      body:
-        "Your phone number was not sent anywhere and was not saved. If you are " +
-        "already receiving text messages, reply STOP to any Ruchie Landau " +
-        "Photography message to unsubscribe."
-    });
-  }
+  /* Loading-state duration for the simulated round trip. Roughly what a real
+     same-origin API call will feel like; delete once the API is wired up. */
+  var SIMULATED_LATENCY_MS = 750;
 
   /* ------------------------------------------------------------------------
-     2. Phone validation (North American Numbering Plan)
+     1. Phone validation (North American Numbering Plan)
      ---------------------------------------------------------------------- */
 
   /**
@@ -67,9 +45,9 @@
    * 8455550123, +1 845 555 0123.
    *
    * @param {string} raw
-   * @returns {{ ok: boolean, e164?: string, reason?: string }}
+   * @returns {{ ok: boolean, e164?: string, masked?: string, reason?: string }}
    */
-  function parseNorthAmericanNumber(raw) {
+  function validatePhone(raw) {
     var trimmed = String(raw || "").trim();
 
     if (trimmed === "") {
@@ -100,7 +78,47 @@
       };
     }
 
-    return { ok: true, e164: "+1" + digits };
+    return {
+      ok: true,
+      e164: "+1" + digits,
+      masked: "(***) ***-" + digits.slice(-4)
+    };
+  }
+
+  /* ------------------------------------------------------------------------
+     2. SIMULATION LAYER — the only part that changes when the backend lands
+     ------------------------------------------------------------------------
+     Both functions take the validated E.164 number and return a promise that
+     resolves when the (simulated) request completes.
+
+     Real implementation, for reference:
+
+       function simulateSmsOptIn(phone) {          // -> submitSmsOptIn
+         return fetch("/api/sms/opt-in", {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ phone: phone, consent: true })
+         }).then(function (res) {
+           if (!res.ok) throw new Error("Request failed");
+           return res.json();
+         });
+       }
+
+     Note the parameter is deliberately unused below: nothing is sent.
+     ---------------------------------------------------------------------- */
+
+  function simulateSmsOptIn(/* phone */) {
+    return delay(SIMULATED_LATENCY_MS);
+  }
+
+  function simulateSmsOptOut(/* phone */) {
+    return delay(SIMULATED_LATENCY_MS);
+  }
+
+  function delay(ms) {
+    return new Promise(function (resolve) {
+      window.setTimeout(resolve, ms);
+    });
   }
 
   /* ------------------------------------------------------------------------
@@ -128,45 +146,70 @@
     }
   }
 
-  function renderNotice(statusEl, result) {
-    if (!statusEl) return;
-    statusEl.innerHTML = "";
-
-    var notice = document.createElement("div");
-    notice.className = "notice";
-
-    var title = document.createElement("p");
-    title.className = "notice__title";
-    title.textContent = result.title;
-    notice.appendChild(title);
-
-    if (result.body) {
-      var body = document.createElement("p");
-      body.textContent = result.body;
-      notice.appendChild(body);
+  /**
+   * Puts a submit button into its loading state. Uses aria-disabled rather
+   * than the disabled attribute so the button keeps keyboard focus while the
+   * request is in flight; the submit handler guards against double sends.
+   */
+  function setBusy(button, isBusy, busyLabel) {
+    if (!button) return;
+    if (isBusy) {
+      button.dataset.idleLabel = button.textContent.trim();
+      button.textContent = busyLabel;
+      button.classList.add("is-busy");
+      button.setAttribute("aria-disabled", "true");
+      button.setAttribute("aria-busy", "true");
+    } else {
+      if (button.dataset.idleLabel) button.textContent = button.dataset.idleLabel;
+      button.classList.remove("is-busy");
+      button.removeAttribute("aria-disabled");
+      button.removeAttribute("aria-busy");
     }
-
-    statusEl.appendChild(notice);
   }
 
-  function clearNotice(statusEl) {
-    if (statusEl) statusEl.innerHTML = "";
+  /** Swaps a card between its form view and its success view. */
+  function showView(hideEl, showEl) {
+    hideEl.hidden = true;
+    showEl.hidden = false;
+
+    // Move focus so keyboard and screen-reader users land on the new content.
+    // preventScroll + an explicit scroll keeps the result centred: the success
+    // view is shorter than the form it replaced, so the browser's own minimal
+    // scrolling would otherwise leave the reader below the message.
+    try {
+      showEl.focus({ preventScroll: true });
+    } catch (err) {
+      showEl.focus();
+    }
+    if (showEl.scrollIntoView) {
+      showEl.scrollIntoView({ block: "center" });
+    }
+  }
+
+  function setMaskedPhone(view, masked) {
+    var target = view.querySelector("[data-masked-phone]");
+    if (target) target.textContent = masked;
   }
 
   /* ------------------------------------------------------------------------
-     4. Opt-in form
+     4. Opt-in
      ---------------------------------------------------------------------- */
 
   function initOptInForm() {
     var form = document.getElementById("sms-opt-in-form");
     if (!form) return;
 
+    var formView = document.getElementById("optin-form-view");
+    var successView = document.getElementById("optin-success-view");
     var phone = document.getElementById("optin-phone");
     var phoneError = document.getElementById("optin-phone-error");
     var consent = document.getElementById("optin-consent");
     var consentBlock = document.getElementById("optin-consent-block");
     var consentError = document.getElementById("optin-consent-error");
-    var status = document.getElementById("optin-status");
+    var submit = form.querySelector('button[type="submit"]');
+    var resetLink = document.getElementById("optin-reset");
+
+    var busy = false;
 
     // COMPLIANCE: the consent checkbox must never arrive pre-checked. Browsers
     // restore checkbox state on soft reload / back-navigation, so it is reset
@@ -183,19 +226,38 @@
       clearError(consentError);
     });
 
+    function showOptInSuccess(masked) {
+      setMaskedPhone(successView, masked);
+      showView(formView, successView);
+    }
+
+    function resetOptInForm() {
+      phone.value = "";
+      consent.checked = false;
+      setInvalid(phone, false);
+      clearError(phoneError);
+      clearError(consentError);
+      consentBlock.removeAttribute("data-invalid");
+      setBusy(submit, false);
+      busy = false;
+      successView.hidden = true;
+      formView.hidden = false;
+      phone.focus();
+    }
+
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      clearNotice(status);
+      if (busy) return;
 
       var firstInvalid = null;
 
-      var parsed = parseNorthAmericanNumber(phone.value);
-      if (parsed.ok) {
+      var result = validatePhone(phone.value);
+      if (result.ok) {
         setInvalid(phone, false);
         clearError(phoneError);
       } else {
         setInvalid(phone, true);
-        showError(phoneError, parsed.reason);
+        showError(phoneError, result.reason);
         firstInvalid = phone;
       }
 
@@ -216,37 +278,77 @@
         return;
       }
 
-      submitOptIn(parsed.e164).then(function (result) {
-        renderNotice(status, result);
+      // Keep only what is needed for display, then clear the raw value from
+      // the DOM. The full number exists solely in this local variable.
+      var e164 = result.e164;
+      var masked = result.masked;
+      phone.value = "";
+
+      busy = true;
+      setBusy(submit, true, "Signing you up…");
+
+      simulateSmsOptIn(e164).then(function () {
+        e164 = null;
+        busy = false;
+        setBusy(submit, false);
+        showOptInSuccess(masked);
       });
     });
+
+    if (resetLink) {
+      resetLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        resetOptInForm();
+      });
+    }
   }
 
   /* ------------------------------------------------------------------------
-     5. Opt-out form
+     5. Opt-out
      ---------------------------------------------------------------------- */
 
   function initOptOutForm() {
     var form = document.getElementById("sms-opt-out-form");
     if (!form) return;
 
+    var formView = document.getElementById("optout-form-view");
+    var successView = document.getElementById("optout-success-view");
     var phone = document.getElementById("optout-phone");
     var phoneError = document.getElementById("optout-phone-error");
-    var status = document.getElementById("optout-status");
+    var submit = form.querySelector('button[type="submit"]');
+    var resetLink = document.getElementById("optout-reset");
+
+    var busy = false;
 
     phone.addEventListener("input", function () {
       setInvalid(phone, false);
       clearError(phoneError);
     });
 
+    function showOptOutSuccess(masked) {
+      setMaskedPhone(successView, masked);
+      showView(formView, successView);
+    }
+
+    function resetOptOutForm() {
+      phone.value = "";
+      setInvalid(phone, false);
+      clearError(phoneError);
+      setBusy(submit, false);
+      busy = false;
+      successView.hidden = true;
+      formView.hidden = false;
+      phone.focus();
+    }
+
     form.addEventListener("submit", function (event) {
       event.preventDefault();
-      clearNotice(status);
+      if (busy) return;
 
-      var parsed = parseNorthAmericanNumber(phone.value);
-      if (!parsed.ok) {
+      var result = validatePhone(phone.value);
+      if (!result.ok) {
         setInvalid(phone, true);
-        showError(phoneError, parsed.reason);
+        showError(phoneError, result.reason);
         phone.focus();
         return;
       }
@@ -254,10 +356,27 @@
       setInvalid(phone, false);
       clearError(phoneError);
 
-      submitOptOut(parsed.e164).then(function (result) {
-        renderNotice(status, result);
+      var e164 = result.e164;
+      var masked = result.masked;
+      phone.value = "";
+
+      busy = true;
+      setBusy(submit, true, "Processing…");
+
+      simulateSmsOptOut(e164).then(function () {
+        e164 = null;
+        busy = false;
+        setBusy(submit, false);
+        showOptOutSuccess(masked);
       });
     });
+
+    if (resetLink) {
+      resetLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        resetOptOutForm();
+      });
+    }
   }
 
   /* ------------------------------------------------------------------------

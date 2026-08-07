@@ -12,28 +12,54 @@ Intended production hostname: **https://sms.ruchielandau.com**
 
 ---
 
-## ⚠️ This is currently FRONTEND ONLY
+## ⚠️ Current status — FRONTEND SIMULATION MODE
+
+**The deployed website currently uses FRONTEND SIMULATION MODE for SMS
+enrollment and unsubscribe.**
+
+**The UI intentionally behaves like the final system so the production
+experience can be reviewed.**
+
+**No phone numbers, consent records, or unsubscribe requests are transmitted or
+stored.**
+
+**The simulated success screens MUST NOT be considered proof of actual SMS
+consent.**
 
 There is **no backend of any kind** in this repository — no API, no Worker, no
 database, no D1, no KV, no Twilio integration, no authentication.
 
-Actual SMS opt-in and opt-out processing has intentionally **not** been
-implemented yet. It will be added after the Twilio campaign is approved.
+### What "simulation" means in practice
 
-What that means in practice:
+The customer-facing flow is complete and production-looking: validate → brief
+loading state → success state. Underneath:
 
-- Both forms validate **in the browser only**.
-- No phone number is transmitted, stored, or logged. There is no `fetch`, no
-  `localStorage` / `sessionStorage` / cookie write, and no `console` output
-  containing user input.
-- Neither form ever claims that consent was recorded. On a valid submission
-  they show a plain notice instead:
-  - Opt-in → *"SMS enrollment is not yet active. No consent has been recorded."*
-  - Opt-out → *"Online SMS unsubscribe is not yet active. No changes have been made."*
+- No `fetch`, no `XMLHttpRequest`, no `sendBeacon`, no WebSocket, no form POST.
+- No `localStorage`, no `sessionStorage`, no cookies.
+- Nothing is logged — the phone number never reaches `console.*`.
+- The entered number lives only in a local variable for one page view. It is
+  reduced to a masked form for display (`(***) ***-0123`) and the raw input
+  value is cleared from the DOM as soon as it validates.
+- Reloading the page discards everything. There is nothing to discard anywhere
+  else.
 
-The `_headers` file enforces this at the browser level too: the
+The `_headers` file enforces this at the browser level as a hard backstop: the
 Content-Security-Policy sets `connect-src 'none'` and `form-action 'none'`, so
 the deployed page *cannot* make a network request even by accident.
+
+Per the site owner's instruction, no "demo" / "test" / "simulation" wording
+appears anywhere in the customer-facing UI. The disclosure lives here and in
+the source comments only.
+
+### Before actual production enrollment is enabled
+
+1. Implement backend consent storage.
+2. Implement actual opt-out processing.
+3. Connect appropriate Twilio functionality.
+4. Replace simulation handlers.
+5. Change CSP `connect-src` appropriately.
+6. Test end-to-end.
+7. Only then treat form submissions as real consent.
 
 ---
 
@@ -122,25 +148,35 @@ and security headers described above.
 
 ## Adding the backend later
 
-Everything that needs to change lives at the **top of
-`assets/js/sms-forms.js`**, in the section marked `BACKEND SEAM`:
+`assets/js/sms-forms.js` is organised so that **only the simulation layer has
+to change**. Its functions:
 
-```js
-function submitOptIn(phone) { ... }   // phone arrives as validated E.164, e.g. "+18455550123"
-function submitOptOut(phone) { ... }  // same
-```
+| Function | Role |
+| --- | --- |
+| `validatePhone(raw)` | NANP validation → `{ ok, e164, masked, reason }` |
+| `simulateSmsOptIn(phone)` | **Replace me.** Returns a promise; sends nothing |
+| `simulateSmsOptOut(phone)` | **Replace me.** Returns a promise; sends nothing |
+| `showOptInSuccess(masked)` | Swaps the card to its success view |
+| `showOptOutSuccess(masked)` | Same, for unsubscribe |
+| `resetOptInForm()` | Restores the form ("Sign up another number") |
+| `resetOptOutForm()` | Same, for unsubscribe |
 
-Both are async (they return a promise) and resolve with `{ title, body }`,
-which is rendered into the form's status region. To connect a real API you only
-need to:
+Both simulation functions receive the validated E.164 number
+(e.g. `+18455550123`) and return a promise. To go live:
 
-1. Replace the two function bodies with `fetch()` calls.
-2. Return success/failure wording that reflects what actually happened.
-3. Change `connect-src 'none'` to `connect-src 'self'` in `_headers`.
+1. Replace the bodies of `simulateSmsOptIn` / `simulateSmsOptOut` with
+   same-origin `fetch()` calls (rename them to `submitSmsOptIn` /
+   `submitSmsOptOut` while you're there). A reference implementation is in the
+   comment directly above them.
+2. Reject the promise on failure and add an error branch — the success views
+   are already separate from the form views, so an error view slots in the same
+   way.
+3. Drop `SIMULATED_LATENCY_MS` and its `delay()` helper.
+4. Change `connect-src 'none'` to `connect-src 'self'` in `_headers`.
 
-Nothing else in the site needs to be touched. The phone-number parsing,
-validation, inline error handling, and accessible status messaging already work
-and are independent of the transport.
+Nothing else needs to be touched. Validation, inline errors, the loading state,
+the success views, phone masking, focus management, and the reset flow are all
+independent of the transport.
 
 ---
 
@@ -176,11 +212,14 @@ No analytics, no tracking pixels, no third-party scripts, no web fonts fetched
 from third parties, no cookies. Typography uses system and widely available
 fonts so the site makes zero third-party requests.
 
-## Known gap
+## Support contact details
 
-Business contact details (email address, phone number, mailing address) are
-intentionally **omitted** from the "Need help?" section. They could not be
-verified against the live ruchielandau.com site when this was built, and
-unverified contact details do not belong on a compliance page. Add them to the
-marked spot in `index.html` once confirmed — a reviewer-visible email or phone
-number is a nice-to-have, not a requirement, since HELP is handled over SMS.
+Published in the "Need help?" section of the homepage, and on both legal pages:
+
+- Email: rhoffmanstudios@gmail.com
+- Phone: 845-213-0776
+
+These are supplied by the business owner. They are presented as **support**
+contact methods only — every page states explicitly that emailing or calling
+does not sign anyone up for text messages, because the website form must remain
+the single opt-in path for the A2P 10DLC campaign.

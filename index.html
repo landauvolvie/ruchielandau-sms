@@ -55,9 +55,11 @@
       </section>
 
       <!-- ================= Opt-in ================= -->
-      <section class="section section--tinted" aria-labelledby="opt-in-heading">
+      <section id="sms-signup" class="section section--tinted" aria-labelledby="opt-in-heading">
         <div class="shell">
           <div class="card">
+            <!-- View 1: the sign-up form. Swapped for the success view below. -->
+            <div class="card__view" id="optin-form-view">
             <h2 id="opt-in-heading">Receive SMS Updates</h2>
             <p class="card__intro">
               Receive booking confirmations, session reminders, scheduling
@@ -65,8 +67,10 @@
             </p>
 
             <!--
-              Frontend only. This form does not submit anywhere: the handler in
-              /assets/js/sms-forms.js validates locally and calls preventDefault().
+              SIMULATION MODE: this form does not submit anywhere. The handler
+              in /assets/js/sms-forms.js validates locally, calls
+              preventDefault(), and shows the success view without sending or
+              storing anything. See the comment block at the top of that file.
             -->
             <form id="sms-opt-in-form" novalidate autocomplete="off">
               <div class="field">
@@ -117,13 +121,6 @@
               </div>
 
               <button type="submit" class="button">Sign Up for SMS</button>
-
-              <div
-                class="form-status"
-                id="optin-status"
-                role="status"
-                aria-live="polite"
-              ></div>
             </form>
 
             <p class="card__footnote">
@@ -131,21 +128,67 @@
               Landau Photography. We do not add anyone to the SMS program without
               a request submitted here.
             </p>
+            </div>
+
+            <!-- View 2: shown after a successful sign-up. -->
+            <div
+              class="card__view result"
+              id="optin-success-view"
+              role="status"
+              tabindex="-1"
+              hidden
+            >
+              <span class="result__mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path
+                    d="M4 12.6l5.2 5.2L20 7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+
+              <h2 class="result__title">You&rsquo;re signed up for SMS updates</h2>
+
+              <p class="result__lead">
+                You have successfully subscribed to text messages from Ruchie
+                Landau Photography at
+                <strong data-masked-phone>(***) ***-0000</strong>.
+              </p>
+
+              <p>Message frequency varies. Message and data rates may apply.</p>
+
+              <p>
+                Reply <strong>STOP</strong> at any time to unsubscribe or
+                <strong>HELP</strong> for assistance.
+              </p>
+
+              <p class="result__aside">You can close this page.</p>
+
+              <button type="button" class="link-button" id="optin-reset">
+                Sign up another number
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ================= Opt-out ================= -->
-      <section class="section" aria-labelledby="opt-out-heading">
+      <section id="sms-stop" class="section" aria-labelledby="opt-out-heading">
         <div class="shell">
           <div class="card">
+            <!-- View 1: the unsubscribe form. Swapped for the success view below. -->
+            <div class="card__view" id="optout-form-view">
             <h2 id="opt-out-heading">Stop SMS Messages</h2>
             <p class="card__intro">
               You can unsubscribe at any time by replying
               <strong>STOP</strong> to a Ruchie Landau Photography text message.
             </p>
 
-            <!-- Frontend only. Nothing is transmitted or stored. -->
+            <!-- SIMULATION MODE: nothing is transmitted or stored. -->
             <form id="sms-opt-out-form" novalidate autocomplete="off">
               <div class="field">
                 <label for="optout-phone">Mobile Phone Number</label>
@@ -167,13 +210,6 @@
               <button type="submit" class="button button--quiet">
                 Unsubscribe from SMS
               </button>
-
-              <div
-                class="form-status"
-                id="optout-status"
-                role="status"
-                aria-live="polite"
-              ></div>
             </form>
 
             <p class="card__footnote">
@@ -182,43 +218,108 @@
               is the fastest way to stop messages and always works, whether or
               not you use this form.
             </p>
+            </div>
+
+            <!-- View 2: shown after a successful unsubscribe. -->
+            <div
+              class="card__view result"
+              id="optout-success-view"
+              role="status"
+              tabindex="-1"
+              hidden
+            >
+              <span class="result__mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path
+                    d="M4 12.6l5.2 5.2L20 7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+
+              <h2 class="result__title">You&rsquo;ve been unsubscribed</h2>
+
+              <p class="result__lead">
+                You will no longer receive SMS messages from Ruchie Landau
+                Photography at <strong data-masked-phone>(***) ***-0000</strong>.
+              </p>
+
+              <p>
+                If you change your mind in the future, you may sign up again
+                through this website.
+              </p>
+
+              <p>
+                You can always reply <strong>STOP</strong> to a Ruchie Landau
+                Photography text message to unsubscribe.
+              </p>
+
+              <button type="button" class="link-button" id="optout-reset">
+                Unsubscribe another number
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ================= Help ================= -->
       <section
+        id="sms-help"
         class="section section--tinted section--centered"
         aria-labelledby="help-heading"
       >
-        <div class="shell shell--narrow">
+        <div class="shell">
           <div class="section__head">
             <h2 id="help-heading">Need help?</h2>
             <p>
               Reply <strong>HELP</strong> to a Ruchie Landau Photography text
-              message for assistance.
+              message for assistance, or <strong>STOP</strong> to unsubscribe at
+              any time. You can also reach us directly.
             </p>
-            <p>
-              For questions about photography sessions and bookings, visit
-              <a
-                href="https://www.ruchielandau.com"
-                rel="noopener noreferrer"
-                target="_blank"
-                >www.ruchielandau.com</a
-              >.
-            </p>
-            <!--
-              Business email / phone / mailing address intentionally omitted:
-              they could not be verified from the live site while this page was
-              built, and unverified contact details do not belong on a
-              compliance page. Add them here once confirmed.
-            -->
           </div>
+
+          <ul class="contact-grid">
+            <li>
+              <span class="contact-grid__label">Text</span>
+              <span class="contact-grid__value"
+                >Reply <strong>HELP</strong> or <strong>STOP</strong> to any
+                message</span
+              >
+            </li>
+            <li>
+              <span class="contact-grid__label">Email</span>
+              <a class="contact-grid__value" href="mailto:rhoffmanstudios@gmail.com"
+                >rhoffmanstudios@gmail.com</a
+              >
+            </li>
+            <li>
+              <span class="contact-grid__label">Phone</span>
+              <a class="contact-grid__value" href="tel:+18452130776"
+                >845&#8209;213&#8209;0776</a
+              >
+            </li>
+          </ul>
+
+          <p class="section__note">
+            Emailing or calling is for support only &mdash; it does not sign you
+            up for text messages. Sign-ups happen only through the form on this
+            page. For questions about photography sessions and bookings, visit
+            <a
+              href="https://www.ruchielandau.com"
+              rel="noopener noreferrer"
+              target="_blank"
+              >www.ruchielandau.com</a
+            >.
+          </p>
         </div>
       </section>
 
       <!-- ================= Program information ================= -->
-      <section class="section section--centered" aria-labelledby="program-heading">
+      <section id="sms-faq" class="section section--centered" aria-labelledby="program-heading">
         <div class="shell">
           <div class="section__head">
             <h2 id="program-heading">SMS Program Information</h2>
