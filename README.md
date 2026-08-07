@@ -89,6 +89,25 @@ Deliberately compact — the whole point of the site lands in the first screen:
 5. **SMS Information** — six-item accordion, all collapsed by default.
 6. **Compact footer** — brand, operator line, four links, phone, email.
 
+### ⚠️ Bump the asset version when you change CSS or JS
+
+`index.html`, `privacy-policy/index.html` and `terms-and-conditions/index.html`
+load the assets with a version query:
+
+```html
+<link rel="stylesheet" href="/assets/css/site.css?v=3" />
+<script src="/assets/js/sms-forms.js?v=3" defer></script>
+```
+
+**Bump `v` in all three files whenever `site.css` or `sms-forms.js` changes.**
+
+This is not cosmetic. New HTML served against an old cached `sms-forms.js`
+produced a live site with no tab strip and a Sign Up button that did nothing —
+the old script was looking for elements the new markup no longer had. `_headers`
+backs this up (HTML always revalidates; assets cap at 10 minutes), and the test
+suite fails if a page references an unversioned asset or if the three pages
+disagree on the version.
+
 ### Two implementation notes worth knowing before editing
 
 **The tabs are progressive enhancement.** The markup ships with the tab strip

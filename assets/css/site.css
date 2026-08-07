@@ -167,7 +167,10 @@ svg {
   width: 100%;
   max-width: var(--shell);
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  /* max() keeps content clear of a notch in landscape without adding gutter
+     on ordinary screens. */
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
 .shell--main {
@@ -241,7 +244,7 @@ svg {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0 clamp(0.7rem, 2.6vw, 1.5rem);
+  gap: 0 clamp(0.55rem, 2.6vw, 1.5rem);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -251,9 +254,10 @@ svg {
 .site-nav a {
   display: inline-block;
   padding: 0.35rem 0;
-  /* Sized so all four items stay on one line down to 320px. */
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
+  /* Sized so all four items stay on one line down to ~360px, while staying
+     comfortably readable on a phone. */
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--ink-muted);
@@ -287,10 +291,6 @@ svg {
 @media (min-width: 64rem) {
   .wordmark {
     font-size: 1rem;
-  }
-
-  .site-nav a {
-    font-size: 0.75rem;
   }
 }
 
@@ -367,7 +367,7 @@ svg {
 
 .tab {
   appearance: none;
-  min-height: 3.25rem;
+  min-height: 3.5rem;
   padding: 0.85rem 0.75rem;
   font-family: var(--font-body);
   font-size: 0.8125rem;
@@ -1040,6 +1040,7 @@ input[type="tel"][aria-invalid="true"] {
 }
 
 .site-footer__inner {
+  padding-bottom: env(safe-area-inset-bottom, 0);
   display: grid;
   gap: 0.85rem;
   justify-items: center;

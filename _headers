@@ -13,9 +13,27 @@
 # WHEN THE BACKEND IS ADDED: change connect-src to 'self' so the opt-in and
 # opt-out handlers in /assets/js/sms-forms.js can call the API.
 
+# CACHING — read this before changing an asset.
+#
+# A stale cached stylesheet/script is not cosmetic here: new HTML served with an
+# old sms-forms.js means the tab strip never appears and the submit button does
+# nothing. That happened in production once already.
+#
+# Two defences, use BOTH:
+#   1. The <link>/<script> tags carry a ?v=N query. BUMP N IN ALL THREE HTML
+#      FILES whenever site.css or sms-forms.js changes. A new URL cannot be
+#      served from an old cache entry.
+#   2. The headers below: HTML always revalidates, so a browser can never keep
+#      showing old markup pointing at old asset URLs; assets are capped at
+#      10 minutes, so even a forgotten version bump self-heals quickly.
+
 /*
+  Cache-Control: public, max-age=0, must-revalidate
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
   Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+
+/assets/*
+  Cache-Control: public, max-age=600
