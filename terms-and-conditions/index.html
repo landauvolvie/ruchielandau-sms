@@ -14,7 +14,7 @@
       href="https://sms.ruchielandau.com/terms-and-conditions"
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/assets/css/site.css?v=3" />
+    <link rel="stylesheet" href="/assets/css/site.css?v=4" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -22,7 +22,18 @@
     <header class="site-header">
       <div class="shell site-header__inner">
         <a class="wordmark" href="/">Ruchie Landau Photography</a>
-        <nav class="site-nav" aria-label="Primary">
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+        >
+          <span class="visually-hidden">Open menu</span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="site-nav" id="primary-navigation" aria-label="Primary">
           <ul>
             <li><a href="/">SMS Messaging</a></li>
             <li><a href="/privacy-policy">Privacy</a></li>
@@ -106,10 +117,10 @@
           </div>
 
           <p>
-            <strong>SMS consent is separate from these Terms &amp; Conditions and
-            from the Privacy Policy.</strong> Using this website, booking or
-            purchasing photography services, or accepting these Terms does not
-            enroll you in SMS messaging. You may decline SMS and still use
+            <strong>SMS consent is optional and separate from these Terms &amp;
+            Conditions and from the Privacy Policy.</strong> Using the website,
+            booking, purchasing, creating an account, or accepting these Terms
+            does NOT enroll someone in SMS. You may decline SMS and still use
             Ruchie Landau Photography services.
           </p>
 
@@ -326,5 +337,6 @@
         </p>
       </div>
     </footer>
+    <script src="/assets/js/sms-forms.js?v=4" defer></script>
   </body>
 </html>

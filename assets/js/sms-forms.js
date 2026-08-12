@@ -153,14 +153,15 @@
    */
   function setBusy(button, isBusy, busyLabel) {
     if (!button) return;
+    var label = button.querySelector("span:not(.visually-hidden)") || button;
     if (isBusy) {
-      button.dataset.idleLabel = button.textContent.trim();
-      button.textContent = busyLabel;
+      button.dataset.idleLabel = label.textContent.trim();
+      label.textContent = busyLabel;
       button.classList.add("is-busy");
       button.setAttribute("aria-disabled", "true");
       button.setAttribute("aria-busy", "true");
     } else {
-      if (button.dataset.idleLabel) button.textContent = button.dataset.idleLabel;
+      if (button.dataset.idleLabel) label.textContent = button.dataset.idleLabel;
       button.classList.remove("is-busy");
       button.removeAttribute("aria-disabled");
       button.removeAttribute("aria-busy");
@@ -450,7 +451,40 @@
   }
 
   /* ------------------------------------------------------------------------
-     7. Boot
+     7. Mobile navigation
+     ---------------------------------------------------------------------- */
+
+  function initMobileNavigation() {
+    var header = document.querySelector(".site-header");
+    var toggle = document.querySelector(".menu-toggle");
+    var navigation = document.getElementById("primary-navigation");
+    if (!header || !toggle || !navigation) return;
+
+    function setOpen(isOpen) {
+      header.setAttribute("data-menu-open", isOpen ? "true" : "false");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      var label = toggle.querySelector(".visually-hidden");
+      if (label) label.textContent = isOpen ? "Close menu" : "Open menu";
+    }
+
+    toggle.addEventListener("click", function () {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+
+    navigation.addEventListener("click", function (event) {
+      if (event.target.closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     8. Boot
      ------------------------------------------------------------------------
      Each feature is booted independently: if one ever throws, the others still
      work rather than the whole page going inert.
@@ -468,6 +502,7 @@
   }
 
   function init() {
+    boot("mobile navigation", initMobileNavigation);
     boot("tabs", initTabs);
     boot("opt-in form", initOptInForm);
     boot("opt-out form", initOptOutForm);
