@@ -34,7 +34,7 @@ body {
 
 body.home-page {
   background-color: #eee7df;
-  background-image: linear-gradient(rgba(250, 247, 243, 0.18), rgba(250, 247, 243, 0.18)), url("/assets/images/studio-background.png");
+  background-image: linear-gradient(rgba(250, 247, 243, 0.18), rgba(250, 247, 243, 0.18)), url("/assets/images/studio-background.jpg");
   background-position: center top 58px;
   background-repeat: no-repeat;
   background-size: cover;
