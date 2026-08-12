@@ -81,6 +81,11 @@
           <section class="panel" id="panel-receive" aria-labelledby="opt-in-heading">
             <div class="panel__view" id="optin-form-view">
               <h2 id="opt-in-heading">Receive SMS Updates</h2>
+              <p class="panel__lead">
+                <strong>SMS is optional.</strong> You can book and use Ruchie
+                Landau Photography services without signing up for text
+                messages.
+              </p>
 
               <!--
                 SIMULATION MODE: this form does not submit anywhere. The handler
@@ -111,7 +116,8 @@
                   * No `checked` attribute, and reset to unchecked on every page
                     load by sms-forms.js.
                   * Not bundled with accepting the Terms or the Privacy Policy.
-                  * Required before the form will proceed.
+                  * Required before the SMS sign-up form will proceed, but not
+                    required to book or use photography services.
                   * The disclosure is shown in full at body size — never
                     collapsed, truncated, or shrunk.
                 -->
@@ -148,9 +154,22 @@
                 <a href="/terms-and-conditions">Terms &amp; Conditions</a>
               </p>
 
+              <p class="panel__note">
+                Don't want texts?
+                <a
+                  href="https://www.ruchielandau.com"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  >Continue to the main website without SMS<span class="visually-hidden">
+                    (opens in a new tab)</span
+                  ></a
+                >.
+              </p>
+
               <p class="panel__note panel__note--quiet">
                 This form is the only way to sign up for texts from Ruchie
-                Landau Photography.
+                Landau Photography. Leaving the SMS box unchecked does not
+                affect your ability to book or use photography services.
               </p>
             </div>
 
@@ -384,7 +403,9 @@
             <div class="faq__body">
               <p>
                 No. Consent to receive SMS messages is not a condition of
-                purchasing or booking photography services.
+                purchasing or booking photography services. You may leave the
+                SMS consent checkbox unchecked and continue using the business
+                without text messaging.
               </p>
             </div>
           </details>
