@@ -77,6 +77,10 @@
           <section class="panel" id="panel-receive" aria-labelledby="opt-in-heading">
             <div class="panel__view" id="optin-form-view">
               <h2 id="opt-in-heading">Receive SMS Updates</h2>
+              <p class="panel__lead">
+                <strong>SMS is optional.</strong> Choose to sign up below, or continue to our
+                main website without providing a phone number or consenting to SMS.
+              </p>
               <form id="sms-opt-in-form" novalidate autocomplete="off">
                 <div class="field">
                   <label for="optin-phone">Mobile Phone Number</label>
@@ -133,15 +137,26 @@
                   <path d="m8.5 12 2.2 2.2 4.8-5" />
                 </svg>
                 <p>
-                  <strong>SMS is completely optional.</strong> Customers can book, purchase,
+                  <strong>No SMS is required to use our business.</strong> You can book, purchase,
                   create an account if applicable, and use Ruchie Landau Photography without
-                  joining SMS.
-                  <a href="https://www.ruchielandau.com" rel="noopener noreferrer" target="_blank">
-                    Continue to Main Website <span aria-hidden="true">→</span>
-                    <span class="visually-hidden">(opens in a new tab)</span>
-                  </a>
+                  entering a phone number or checking the SMS consent box.
                 </p>
               </div>
+
+              <a
+                class="button button--quiet"
+                style="margin-top: 10px; text-decoration: none;"
+                href="https://www.ruchielandau.com"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span>No thanks — continue without SMS</span>
+                <span aria-hidden="true">→</span>
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </a>
+              <p class="panel__note" style="text-align: center; font-size: 11px;">
+                This option requires no phone number and no SMS consent.
+              </p>
             </div>
 
             <div class="panel__view result" id="optin-success-view" role="status" tabindex="-1" hidden>
